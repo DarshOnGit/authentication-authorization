@@ -27,6 +27,30 @@ const userSchema = new mongoose.Schema({
     type : String,
     enum : ["user" , "admin"],
     default : "user"
+  },
+  isEmailVerified:{
+    type : Boolean,
+    default:false
+  },
+  twoFactorEnabled:{
+    type : Boolean,
+    default : false
+  },
+  twoFactorSecret:{
+    type : String,
+    default : undefined
+  },
+  tokenVersion:{
+    type : Number,
+    default : 0
+  },
+  resetPasswordToken:{
+    type : String,
+    default : undefined
+  },
+  resetPasswordExpires:{
+    type : Date,
+    default : undefined
   }
 },{
   timestamps : true
