@@ -61,7 +61,15 @@ userSchema.pre("save",async function(){
     return
   }
   this.password = await bcrypt.hash(this.password , 12);
-})
+});
+
+userSchema.pre(["find","findOne","findOneAndUpdate","findOneAndDelete"],async function(){
+  const filter = this.getFilter();
+
+  if(typeof filter.email === "string") filter.email = filter.email.toLowerCase().trim();
+
+
+});
 
 const user = mongoose.model("User", userSchema);
 

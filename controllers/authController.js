@@ -13,7 +13,7 @@ exports.signup = async (req, res, next) => {
     if (existingUser) {
       return res.status(400).json({
         status: "fail",
-        message: "User already exists",
+        message: "User already exists with the mail",
       });
     }
 
@@ -53,7 +53,7 @@ exports.signup = async (req, res, next) => {
   } catch (err) {
     res.status(500).json({
       status: "fail",
-      message: err,
+      message: err
     });
   }
 };

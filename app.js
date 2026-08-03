@@ -11,6 +11,6 @@ app.use(cookieParser());
 app.use(cors());
 
 //routes
-app.use("/api/auth",authRouter)
+app.use("/api/auth",authRouter);
 
 module.exports = app;
