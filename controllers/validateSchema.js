@@ -1,6 +1,6 @@
 const { z } = require("zod");
 
-const signUpSchema = z
+exports.signUpSchema = z
   .object({
     name: z.string().min(1, "Name is Required"),
     email: z.string().email("Invalid Email"),
@@ -12,4 +12,9 @@ const signUpSchema = z
     path: ["confirmPassword"],
   });
 
-module.exports = signUpSchema;
+  exports.loginSchema = z.object({
+    email : z.string().email("Invalid Email"),
+    password : z.string().min(8,"Password must be atleast 8 characters")
+  })
+
+

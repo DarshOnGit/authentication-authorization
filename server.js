@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 
 dotenv.config({ path: "./.env" });
 
+
+
 mongoose
   .connect(process.env.CONN_STR)
   .then((conn) => {
@@ -16,5 +18,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.log(err.message);
+    console.log(err);
   });

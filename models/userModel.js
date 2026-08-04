@@ -71,6 +71,10 @@ userSchema.pre(["find","findOne","findOneAndUpdate","findOneAndDelete"],async fu
 
 });
 
+userSchema.methods.comparePasswordInDB = async function(pswd , pswdDB){
+  return await bcrypt.compare(pswd,pswdDB);
+}
+
 const user = mongoose.model("User", userSchema);
 
 module.exports = user ;
