@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const {signUpSchema,loginSchema} = require("./validateSchema");
 const sendEmail = require("../utils/email");
 const jwt = require("jsonwebtoken");
-const { createAccessToken, createRefreshToken } = require("../utils/token");
+const { createAccessToken, createRefreshToken , verifyRefreshToken} = require("../utils/token");
 
 
 
@@ -137,7 +137,7 @@ exports.login = async (req,res,next)=>{
 
     const refreshToken  = createRefreshToken(user._id,user.tokenVersion);
 
-    const isProd = process.env.NODE_ENV === "PRODUCTION";
+    const isProd = process.env.NODE_ENV === "production";
 
     res.cookie("refreshToken",refreshToken,{
       httpOnly : true,
@@ -164,4 +164,70 @@ exports.login = async (req,res,next)=>{
     });
   }
 
+}
+
+
+exports.refreshTokenHandler = async(req,res,next)=>{
+  try {
+    const token = req.cookies?.refreshToken ;
+
+    if(!token){
+      return res.status(401).json({
+        status : "fail",
+        message: "Refresh token missing"
+      });
+    }
+
+    const payload = verifyRefreshToken(token);
+
+    const user = await User.findById(payload.sub);
+
+    if(!user){
+      return res.status(401).json({
+        status : "fail",
+        message:"user not found"
+      });
+    }
+
+    if(user.tokenVersion !== payload.tokenVersion){
+      return res.status(401).json({
+        status : "fail",
+        message : "Invalid refresh token"
+      });
+    }
+
+    const newAccessToken = createAccessToken(
+      user._id,
+      user.role,
+      user.tokenVersion
+    );
+
+    const newRefreshToken = createRefreshToken(user._id , user.tokenVersion );
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("refreshToken",newRefreshToken,{
+      httpOnly : true,
+      secure : isProd,
+      sameSite : "lax",
+      maxAge : 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(200).json({
+      status : "success",
+      message : "Token refreshed",
+      accessToken : newAccessToken,
+      user :{
+        id : user._id,
+        role : user.role,
+        isEmailVerified : user.isEmailVerified,
+        twoFactorEnabled : user.twoFactorEnabled
+      }
+    })
+  } catch (err) {
+    return res.status(500).json({
+      status:"fail",
+      message:err
+    })
+  }
 }

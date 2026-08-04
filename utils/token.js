@@ -15,3 +15,7 @@ exports.createRefreshToken = function(userId  , tokenVersion){
         expiresIn : process.env.JWT_REFRESH_EXPIRES
     });
 }
+
+exports.verifyRefreshToken = function(token){
+    return jwt.verify(token , process.env.JWT_REFRESH_SECRET);
+}
